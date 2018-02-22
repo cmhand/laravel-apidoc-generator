@@ -11,6 +11,7 @@ use Mpociot\Reflection\DocBlock\Tag;
 use Illuminate\Support\Facades\Request;
 use League\Fractal\Resource\Collection;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
 class LaravelGenerator extends AbstractGenerator
 {
@@ -266,8 +267,8 @@ class LaravelGenerator extends AbstractGenerator
                     $parameterReflection->request->add($bindings);
 
                     if (method_exists($parameterReflection, 'validator')) {
-                        return app()->call([$parameterReflection, 'validator'])
-                            ->getRules();
+                        $factory = app()->make(ValidationFactory::class);
+                        return app()->call([$parameterReflection, 'validator'], [$factory]);
                     } else {
                         return app()->call([$parameterReflection, 'rules']);
                     }
